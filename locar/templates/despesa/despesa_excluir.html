@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir Despesa{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg mt-6">
+    <h1 class="text-2xl font-bold text-red-700 mb-4 flex items-center gap-2">
+        <!-- Ícone de alerta -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.93 5.93l12.12 12.12M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/>
+        </svg>
+        Excluir Despesa
+    </h1>
+
+    <p class="mb-6 text-slate-700">Tem certeza de que deseja excluir a seguinte despesa?</p>
+
+    <ul class="mb-6 text-slate-700 space-y-2">
+        <li><strong>Veículo:</strong> {{ despesa.veiculo }}</li>
+        <li><strong>Categoria:</strong> {{ despesa.categoria|capfirst }}</li>
+        <li><strong>Descrição:</strong> {{ despesa.descricao }}</li>
+        <li><strong>Valor:</strong> R$ {{ despesa.valor|floatformat:2 }}</li>
+        <li><strong>Data:</strong> {{ despesa.data|date:"d/m/Y" }}</li>
+        {% if despesa.comprovante %}
+            <li><strong>Comprovante:</strong> 
+                <a href="{{ despesa.comprovante.url }}" target="_blank" class="text-blue-600 hover:underline">Ver</a>
+            </li>
+        {% endif %}
+    </ul>
+
+    <form method="post" action="{% url 'despesa_excluir' despesa.id %}"  class="flex items-center gap-4">
+        {% csrf_token %}
+        <!-- Botão de exclusão -->
+        <button type="submit"
+            class="px-4 py-2 bg-red-600 text-white text-sm rounded-xl shadow hover:bg-red-700 transition flex items-center gap-2">
+            <!-- Ícone de exclusão -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Excluir
+        </button>
+        <!-- Botão de cancelamento -->
+        <a href="{% url 'despesa_list' %}"
+           class="px-4 py-2 bg-slate-200 text-slate-800 text-sm rounded-xl shadow hover:bg-slate-300 transition flex items-center gap-2">
+            <!-- Ícone de cancelar -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nova Locação — Locadora{% endblock %}
+{% block page_title %}Nova Locação{% endblock %}
+{% block page_subtitle %}Preencha os dados abaixo para registrar uma nova locação.{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-8">
+  <div class="bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-8">
+    
+    <!-- Cabeçalho -->
+    <div class="flex items-center gap-3 mb-8 border-b border-gray-100 pb-4">
+      <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h5l2 2h5a2 2 0 012 2v12a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">Cadastrar Nova Locação</h2>
+        <p class="text-sm text-gray-500">Informe os dados da locação com atenção antes de salvar.</p>
+      </div>
+    </div>
+
+    <!-- Formulário -->
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+      <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Cliente -->
+        <div>
+          <label for="cliente" class="block text-sm font-semibold text-gray-700 mb-1">Cliente</label>
+          <select id="cliente" name="cliente" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition">
+            <option value="">Selecione um cliente</option>
+            {% for c in clientes %}
+              <option value="{{ c.id }}" {% if form.cliente.value == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nome }}</option>
+            {% endfor %}
+          </select>
+          {% if form.cliente.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.cliente.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Veículo -->
+        <div>
+          <label for="veiculo" class="block text-sm font-semibold text-gray-700 mb-1">Veículo</label>
+          <select id="veiculo" name="veiculo" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition">
+            <option value="">Selecione um veículo</option>
+            {% for v in veiculos_disponiveis %}
+              <option value="{{ v.id }}" {% if form.veiculo.value == v.id|stringformat:"s" %}selected{% endif %}>
+                {{ v.modelo }} / {{ v.placa }}
+              </option>
+            {% endfor %}
+          </select>
+          {% if form.veiculo.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.veiculo.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Datas -->
+        <div>
+          <label for="inicio" class="block text-sm font-semibold text-gray-700 mb-1">Início da Locação</label>
+          <input type="datetime-local" id="inicio" name="inicio" value="{{ form.inicio.value|default_if_none:'' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition bg-white">
+          {% if form.inicio.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.inicio.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="fim" class="block text-sm font-semibold text-gray-700 mb-1">Fim Previsto</label>
+          <input type="datetime-local" id="fim" name="fim" value="{{ form.fim.value|default_if_none:'' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition bg-white">
+          {% if form.fim.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.fim.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- KM Inicial -->
+        <div>
+          <label for="km_inicio" class="block text-sm font-semibold text-gray-700 mb-1">KM Inicial</label>
+          <input type="number" id="km_inicio" name="km_inicio" value="{{ form.km_inicio.value|default_if_none:'' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-white">
+          {% if form.km_inicio.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.km_inicio.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Caução -->
+        <div>
+          <label for="caucao" class="block text-sm font-semibold text-gray-700 mb-1">Caução (R$)</label>
+          <input type="number" step="0.01" id="caucao" name="caucao" value="{{ form.caucao.value|default_if_none:'0.00' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-white">
+          {% if form.caucao.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.caucao.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Valor e semanas -->
+        <div>
+          <label for="valor_semanal" class="block text-sm font-semibold text-gray-700 mb-1">Valor Semanal (R$)</label>
+          <input type="number" step="0.01" id="valor_semanal" name="valor_semanal" value="{{ form.valor_semanal.value|default_if_none:'0.00' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-white">
+        </div>
+
+        <div>
+          <label for="quantidade_semanas" class="block text-sm font-semibold text-gray-700 mb-1">Quantidade de Semanas</label>
+          <input type="number" step="1" id="quantidade_semanas" name="quantidade_semanas" value="{{ form.quantidade_semanas.value|default_if_none:'0' }}" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-white">
+        </div>
+
+        <!-- Pagamento -->
+        <div>
+          <label for="id_forma_pagamento" class="block text-sm font-semibold text-gray-700 mb-1">Forma de Pagamento</label>
+          <select id="id_forma_pagamento" name="forma_pagamento" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 transition">
+            {% for value, label in form.fields.forma_pagamento.choices %}
+              <option value="{{ value }}" {% if form.forma_pagamento.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- 📎 Documentos da Locação -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Documentos da Locação</label>
+          <label for="id_documentos_locacao"
+            class="flex flex-col items-center justify-center w-full h-36 rounded-xl cursor-pointer border-2 border-dashed border-gray-300 bg-gray-50 hover:border-green-400 hover:bg-green-50 transition">
+            <div class="flex flex-col items-center justify-center text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mb-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 0l-3 3m3-3l3 3"/>
+              </svg>
+              <span class="text-sm font-medium">Clique para enviar ou arraste o arquivo</span>
+              <span class="text-xs text-gray-400 mt-1">Formatos aceitos: PDF, JPG, PNG</span>
+            </div>
+            <input type="file" name="documentos_locacao" id="id_documentos_locacao" class="hidden">
+          </label>
+          {% if form.documentos_locacao.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ form.documentos_locacao.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Observações -->
+        <div class="md:col-span-2">
+          <label for="observacoes" class="block text-sm font-semibold text-gray-700 mb-1">Observações</label>
+          <textarea id="observacoes" name="observacoes" rows="3" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:border-green-400 bg-white">{{ form.observacoes.value|default_if_none:'' }}</textarea>
+        </div>
+      </div>
+
+      <!-- Botões -->
+      <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+        <a href="{% url 'locacao_list' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition shadow-sm w-full sm:w-auto">
+          Voltar
+        </a>
+        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 text-sm font-semibold shadow-md transition w-full sm:w-auto">
+          Salvar Locação
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Script para preencher KM automaticamente -->
+<script>
+  const veiculosKM = {
+    {% for v in veiculos_disponiveis %}
+      "{{ v.id }}": "{{ v.km_atual }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  };
+  const veiculoSelect = document.getElementById('veiculo');
+  const kmInput = document.getElementById('km_inicio');
+  veiculoSelect.addEventListener('change', () => {
+    kmInput.value = veiculosKM[veiculoSelect.value] || '';
+  });
+</script>
+{% endblock %}

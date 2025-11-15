@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Locação — Locadora{% endblock %}
+{% block page_title %}Editar Locação{% endblock %}
+{% block page_subtitle %}Atualize os dados da locação e salve as alterações.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-6">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+        <h2 class="text-2xl font-bold text-green-700 flex items-center gap-3 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h5l2 2h5a2 2 0 012 2v12a2 2 0 01-2 2z"/>
+            </svg>
+            Editar Locação
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Cliente -->
+                <div>
+                    <label for="cliente" class="block text-sm font-medium text-slate-700">Cliente</label>
+                    <select name="cliente" id="cliente" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                        <option value="">Selecione um cliente</option>
+                        {% for c in clientes %}
+                            <option value="{{ c.id }}" {% if object.cliente and object.cliente.id == c.id %}selected{% endif %}>
+                                {{ c.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.cliente.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.cliente.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Veículo -->
+                <div>
+                    <label for="veiculo" class="block text-sm font-medium text-slate-700">Veículo</label>
+                    <select name="veiculo" id="veiculo" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                        <option value="">Selecione um veículo</option>
+                        {% for v in veiculos_disponiveis %}
+                            <option value="{{ v.id }}" {% if object.veiculo and object.veiculo.id == v.id %}selected{% endif %}>
+                                {{ v.modelo }} / {{ v.placa }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.veiculo.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.veiculo.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Início -->
+                <div>
+                    <label for="inicio" class="block text-sm font-medium text-slate-700">Data e Hora de Início</label>
+                    <input type="datetime-local" name="inicio" id="inicio" 
+                        value="{{ object.inicio|date:'Y-m-d\TH:i' }}" 
+                        class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                    {% if form.inicio.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.inicio.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Fim -->
+                <div>
+                    <label for="fim" class="block text-sm font-medium text-slate-700">Data e Hora de Fim</label>
+                    <input type="datetime-local" name="fim" id="fim" 
+                        value="{{ object.fim|date:'Y-m-d\TH:i' }}" 
+                        class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                    {% if form.fim.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.fim.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- KM início -->
+                <div>
+                    <label for="km_inicio" class="block text-sm font-medium text-slate-700">KM Inicial</label>
+                    <input type="number" name="km_inicio" id="km_inicio" value="{{ object.km_inicio }}" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                    {% if form.km_inicio.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.km_inicio.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Caução -->
+                <div>
+                    <label for="caucao" class="block text-sm font-medium text-slate-700">Caução (R$)</label>
+                    <input type="number" step="0.01" name="caucao" id="caucao" value="{{ object.caucao|default_if_none:'0.00' }}" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                    {% if form.caucao.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.caucao.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Pago -->
+                <div class="md:col-span-2">
+                    <label for="pago" class="inline-flex items-center gap-2 mt-2">
+                        <input type="checkbox" name="pago" id="pago" class="rounded border-slate-300 text-green-600 focus:ring-green-500" {% if object.pago %}checked{% endif %}>
+                        Pago
+                    </label>
+                    {% if form.pago.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.pago.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Valor Total -->
+                <div>
+                    <label for="valor_total" class="block text-sm font-medium text-slate-700">Valor Total (R$)</label>
+                    <input type="number" step="0.01" name="valor_total" id="valor_total" value="{{ object.valor_total|default_if_none:'0.00' }}" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                    {% if form.valor_total.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.valor_total.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Forma de pagamento -->
+                <div>
+                    <label for="id_forma_pagamento" class="block text-sm font-medium text-slate-700">Forma de Pagamento</label>
+                    <select name="forma_pagamento" id="id_forma_pagamento" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+                        {% for value, label in form.fields.forma_pagamento.choices %}
+                            <option value="{{ value }}" {% if object.forma_pagamento == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.forma_pagamento.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.forma_pagamento.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Documentos -->
+                <div class="md:col-span-2">
+                    <label for="documentos_locacao" class="block text-sm font-medium text-slate-700">Documentos (opcional)</label>
+                    <input type="file" name="documentos_locacao" id="documentos_locacao" class="mt-1 block w-full text-sm text-slate-500 file:border-0 file:bg-green-100 file:text-green-700 file:px-4 file:py-2 file:rounded-xl file:font-medium file:hover:bg-green-200">
+                    {% if form.documentos_locacao.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.documentos_locacao.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Observações -->
+                <div class="md:col-span-2">
+                    <label for="observacoes" class="block text-sm font-medium text-slate-700">Observações</label>
+                    <textarea name="observacoes" id="observacoes" rows="3" class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">{{ object.observacoes }}</textarea>
+                    {% if form.observacoes.errors %}
+                        <p class="text-red-600 text-xs mt-1">{{ form.observacoes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="pt-6 flex flex-col sm:flex-row justify-end gap-3">
+                <a href="{% url 'locacao_list' %}" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 bg-slate-100 hover:bg-slate-200 transition shadow-sm w-full sm:w-auto">
+                    Voltar
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 hover:bg-green-800 text-white px-4 py-3 text-sm shadow-md transition w-full sm:w-auto">
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

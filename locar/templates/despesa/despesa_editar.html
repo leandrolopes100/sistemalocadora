@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Editar Despesa{% endblock %}
+{% block page_title %}Editar Despesa{% endblock %}
+{% block page_subtitle %}Atualize os dados da despesa conforme necessário.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+        <h2 class="text-2xl font-bold text-amber-700 flex items-center gap-3 mb-6">
+            <!-- Ícone editar -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.651-1.652a1.875 1.875 0 112.652 2.652L8.84 17.813a4.5 4.5 0 01-1.897 1.13l-3.12.937.938-3.12a4.5 4.5 0 011.13-1.897l12.97-12.97z"/>
+            </svg>
+            Editar Despesa
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-lg">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in form %}
+                    <div class="{% if field.name == 'descricao' %}md:col-span-2{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-2">
+                            {{ field.label }}
+                        </label>
+                        {% render_field field class+="w-full p-3 rounded-xl border border-gray-300 shadow-sm focus:ring-amber-500 focus:border-amber-500 transition" %}
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="text-sm text-red-600 mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-end gap-4 pt-6">
+                <a href="{% url 'despesa_list' %}"
+                   class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl shadow flex items-center gap-2 transition">
+                    <!-- Ícone cancelar -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Cancelar
+                </a>
+
+                <button type="submit"
+                        class="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl shadow flex items-center gap-2 transition">
+                    <!-- Ícone salvar -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

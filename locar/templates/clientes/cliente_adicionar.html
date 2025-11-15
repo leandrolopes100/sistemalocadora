@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Novo Cliente — Locadora{% endblock %}
+
+{% block page_title %}Novo Cliente{% endblock %}
+
+{% block page_subtitle %}Preencha os dados do cliente para cadastrá-lo no sistema.{% endblock %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data" class="space-y-6">
+  {% csrf_token %}
+
+  <!-- Grupo: Dados Pessoais -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label for="nome" class="block text-sm font-medium text-slate-700">Nome completo</label>
+      <input type="text" name="nome" id="nome" placeholder="Ex: João da Silva" 
+             value="{{ form.nome.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.nome.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.nome.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="cpf" class="block text-sm font-medium text-slate-700">CPF</label>
+      <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00"
+             value="{{ form.cpf.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.cpf.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.cpf.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="data_nascimento" class="block text-sm font-medium text-slate-700">Data de Nascimento</label>
+      <input type="date" name="data_nascimento" id="data_nascimento" 
+             value="{{ form.data_nascimento.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.data_nascimento.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.data_nascimento.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="telefone" class="block text-sm font-medium text-slate-700">Telefone</label>
+      <input type="text" name="telefone" id="telefone" placeholder="(99) 99999-9999"
+             value="{{ form.telefone.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.telefone.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.telefone.errors.0 }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div>
+    <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+    <input type="email" name="email" id="email" placeholder="exemplo@email.com"
+           value="{{ form.email.value|default_if_none:'' }}" 
+           class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                  focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+    {% if form.email.errors %}
+      <p class="text-red-600 text-xs mt-1">{{ form.email.errors.0 }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Grupo: Documentos -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label for="cnh_numero" class="block text-sm font-medium text-slate-700">Número CNH</label>
+      <input type="text" name="cnh_numero" id="cnh_numero" placeholder="Ex: 09867834526723"
+             value="{{ form.cnh_numero.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.cnh_numero.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.cnh_numero.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="cnh_validade" class="block text-sm font-medium text-slate-700">Validade CNH</label>
+      <input type="date" name="cnh_validade" id="cnh_validade" 
+             value="{{ form.cnh_validade.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.cnh_validade.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.cnh_validade.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="mb-4">
+        <div class="flex items-center gap-3">
+          <label for="documento_com_foto" class="text-sm font-medium text-slate-700">
+            Documento com Foto (CNH)
+          </label>
+
+          <input type="file" name="documento_com_foto" id="documento_com_foto"
+                accept="image/*,application/pdf"
+                class="text-sm text-slate-700
+                      file:py-2 file:px-4
+                      file:rounded-xl file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-green-700 file:text-white
+                      hover:file:bg-green-800 transition" />
+      </div>
+
+        {% if form.documento_com_foto.errors %}
+          <p class="text-red-600 text-xs mt-1">{{ form.documento_com_foto.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+
+    <div class="md:col-span-2">
+      <label for="endereco" class="block text-sm font-medium text-slate-700">Endereço</label>
+      <input type="text" name="endereco" id="endereco" placeholder="Rua Exemplo, 123, Bairro, Cidade"
+             value="{{ form.endereco.value|default_if_none:'' }}" 
+             class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">
+      {% if form.endereco.errors %}
+        <p class="text-red-600 text-xs mt-1">{{ form.endereco.errors.0 }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Observação -->
+  <div>
+    <label for="observacao" class="block text-sm font-medium text-slate-700">Observação</label>
+    <textarea name="observacao" id="observacao" rows="3" placeholder="Observações adicionais"
+              class="mt-1 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm 
+                     focus:outline-none focus:ring-2 focus:ring-auto-300 bg-white">{{ form.observacao.value|default_if_none:'' }}</textarea>
+    {% if form.observacao.errors %}
+      <p class="text-red-600 text-xs mt-1">{{ form.observacao.errors.0 }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Botões -->
+  <div class="pt-6 flex flex-col sm:flex-row justify-end gap-3">
+    <a href="javascript:history.back()" 
+       class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 bg-slate-100 hover:bg-slate-200 transition shadow-sm w-full sm:w-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Voltar
+    </a>
+
+    <button type="submit" 
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 hover:bg-green-800 text-white px-4 py-3 text-sm shadow-md transition-all w-full sm:w-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+      Salvar Cliente
+    </button>
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Contas a Receber{% endblock %}
+
+{% block content %}
+<div class="p-6 space-y-8">
+
+  <!-- 🔹 Cabeçalho -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M2 11a1 1 0 011-1h2v6H3a1 1 0 01-1-1v-4zm6-3a1 1 0 011-1h2v9H9a1 1 0 01-1-1V8zm6-5a1 1 0 011-1h2v14h-2a1 1 0 01-1-1V3z" />
+      </svg>
+      Locações a Receber
+    </h1>
+  </div>
+  
+  <!-- 🔹 Barra de Busca -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <form method="get" class="flex flex-wrap items-center gap-2">
+      <div class="relative">
+        <input
+          id="q"
+          name="q"
+          value="{{ q|default:'' }}"
+          type="text"
+          placeholder="Buscar por cliente ou veículo..."
+          class="w-72 max-w-full rounded-xl border border-gray-200 pl-10 pr-3 py-2 text-sm placeholder-gray-400 transition bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+        />
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/>
+        </svg>
+      </div>
+
+      <button class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-blue-50 transition" type="submit">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z" />
+        </svg>
+        Buscar
+      </button>
+
+      {% if q %}
+        <a href="?" class="text-sm text-gray-500 underline hover:text-gray-700">Limpar</a>
+      {% endif %}
+    </form>
+  </div>
+
+  {% if agrupado %}
+    {% for dia, locacoes in agrupado.items %}
+    <section class="space-y-4">
+      
+      <!-- Cabeçalho da Data -->
+      <div class="flex items-center gap-3 mb-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 shadow-sm">
+        <div class="flex items-center justify-center w-9 h-9 rounded-full bg-blue-200 text-blue-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 
+                  00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2 class="text-lg font-semibold text-blue-800 uppercase tracking-wide">{{ dia }}</h2>
+      </div>
+
+      <!-- Tabela compacta -->
+      <div class="overflow-x-auto bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50 text-gray-600 text-xs uppercase">
+            <tr>
+              <th class="px-4 py-3 text-left">Locação</th>
+              <th class="px-4 py-3 text-left">Cliente / Veículo</th>
+              <th class="px-4 py-3 text-right">Total</th>
+              <th class="px-4 py-3 text-right">Pago</th>
+              <th class="px-4 py-3 text-center">Semanas</th>
+              <th class="px-4 py-3 text-center">Próx. Pagamento</th>
+              <th class="px-4 py-3 text-center">Último Pagamento</th>
+              <th class="px-4 py-3 text-center">Status</th>
+              <th class="px-4 py-3 text-center">Ação</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for item in locacoes %}
+            <tr class="hover:bg-gray-50 transition">
+              
+              <!-- Locação -->
+              <td class="px-4 py-3 font-medium text-gray-700 whitespace-nowrap">
+                #{{ item.locacao.id }}
+              </td>
+
+              <!-- Cliente / Veículo -->
+              <td class="px-4 py-3 text-gray-700">
+                <div class="font-semibold text-gray-800">{{ item.cliente }}</div>
+                <div class="text-xs text-gray-500">{{ item.veiculo }}</div>
+              </td>
+
+              <!-- Valor total -->
+              <td class="px-4 py-3 text-right text-gray-700">
+                R$ {{ item.valor_total|floatformat:2|intcomma }}
+              </td>
+
+              <!-- Pago -->
+              <td class="px-4 py-3 text-right text-green-700 font-medium">
+                R$ {{ item.total_pago|floatformat:2|intcomma }}
+              </td>
+
+              <!-- Semanas -->
+              <td class="px-4 py-3 text-center text-gray-600">
+                {{ item.semanas_pagas }}/{{ item.locacao.quantidade_semanas }}
+              </td>
+
+              <!-- Próximo pagamento -->
+              <td class="px-4 py-3 text-center text-gray-600 whitespace-nowrap">
+                {{ item.proximo_pagamento|date:"d/m/Y" }}
+              </td>
+
+              <!-- Último pagamento -->
+              <td class="px-4 py-3 text-center text-gray-600 whitespace-nowrap">
+                {% if item.ultimo_pagamento %}
+                  {{ item.ultimo_pagamento|date:"d/m/Y" }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+
+              <!-- Status -->
+              <td class="px-4 py-3 text-center">
+                {% if item.status == "vencido" %}
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">
+                    Vencido
+                  </span>
+                {% elif item.status == "proximo" %}
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-700 rounded-full">
+                    Próximo
+                  </span>
+                {% else %}
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                    Em dia
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- Ações -->
+              <td class="px-4 py-3 text-center">
+                {% if item.semanas_restantes == 0 %}
+                  <span class="text-green-700 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">✅ Quitado</span>
+                {% else %}
+                  <a href="{% url 'pagamento' item.locacao.id %}"
+                     class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition">
+                    💳 Pagar
+                  </a>
+                {% endif %}
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-10 text-gray-500">
+      Nenhuma locação semanal em andamento.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

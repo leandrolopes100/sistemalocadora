@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Efetuar Pagamento — Locadora{% endblock %}
+{% block page_title %}Efetuar Pagamento{% endblock %}
+{% block page_subtitle %}Gerencie o pagamento semanal da locação selecionada.{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10 bg-white border border-gray-100 rounded-2xl shadow-lg p-10">
+
+  <!-- Cabeçalho -->
+  <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.12-3 2.5S10.343 13 12 13s3-1.12 3-2.5S13.657 8 12 8zm0 0v1.5m0 4V17m-6 1a9 9 0 1118 0H6z" />
+        </svg>
+        Locação #{{ locacao.id }}
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">
+        Cliente: <span class="font-medium text-gray-700">{{ locacao.cliente }}</span>
+      </p>
+    </div>
+    <a href="{% url 'receber' %}"
+       class="text-sm font-medium text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Voltar
+    </a>
+  </div>
+
+  <!-- Informações da locação -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-sm transition">
+      <p class="text-gray-500 text-xs uppercase tracking-wide">Veículo</p>
+      <p class="font-semibold text-gray-800 mt-1">{{ locacao.veiculo }}</p>
+    </div>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-sm transition">
+      <p class="text-gray-500 text-xs uppercase tracking-wide">Valor Total</p>
+      <p class="font-semibold text-gray-800 mt-1">R$ {{ locacao.valor_total_locacao|floatformat:2 }}</p>
+    </div>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-sm transition">
+      <p class="text-gray-500 text-xs uppercase tracking-wide">Parcela Semanal</p>
+      <p class="font-semibold text-gray-800 mt-1">R$ {{ parcela|floatformat:2 }}</p>
+    </div>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-sm transition">
+      <p class="text-gray-500 text-xs uppercase tracking-wide">Semanas Pagas</p>
+      <p class="font-semibold text-gray-800 mt-1">{{ locacao.semanas_pagas }} / {{ locacao.quantidade_semanas }}</p>
+    </div>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-sm transition">
+      <p class="text-gray-500 text-xs uppercase tracking-wide">Semanas Restantes</p>
+      <p class="font-semibold text-gray-800 mt-1">{{ semanas_restantes }}</p>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <form method="post" class="text-center">
+    {% csrf_token %}
+    {% if locacao.semanas_pagas < locacao.quantidade_semanas %}
+      <button type="submit"
+        class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 24 24" 
+             fill="none" 
+             stroke="currentColor" 
+             class="w-5 h-5">
+          <path d="M5 12h14M12 5l7 7-7 7" 
+                stroke-width="1.8" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"/>
+        </svg>
+        Confirmar pagamento da semana {{ locacao.semanas_pagas|add:1 }} / {{ locacao.quantidade_semanas }}
+      </button>
+    {% else %}
+      <div class="text-gray-700 text-sm bg-emerald-50 rounded-xl p-4 border border-emerald-200 font-medium flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Todas as {{ locacao.quantidade_semanas }} parcelas desta locação foram quitadas.
+      </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

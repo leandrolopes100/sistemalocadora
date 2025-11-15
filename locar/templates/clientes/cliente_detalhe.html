@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Cliente — Detalhes{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-6 py-12">
+
+  <!-- 🔹 Cabeçalho -->
+  <header class="mb-10">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2">Detalhes do Cliente</h1>
+    <p class="text-gray-500 text-sm">Visualize as informações completas do cliente cadastrado no sistema.</p>
+  </header>
+
+  <!-- 🔹 Card principal -->
+  <div class="bg-white/70 backdrop-blur border border-gray-200 shadow-sm rounded-2xl p-8 transition hover:shadow-md">
+
+    <!-- Sessão superior -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-6 border-b border-gray-100">
+      <div>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ cliente.nome }}</h2>
+        <p class="text-gray-500 text-sm mt-1">CPF: {{ cliente.cpf }}</p>
+      </div>
+      <a href="{% url 'cliente_list' %}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Voltar
+      </a>
+    </div>
+
+    <!-- Sessões de dados -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+
+      <!-- Informações pessoais -->
+      <section>
+        <h3 class="text-sm font-semibold text-gray-500 uppercase mb-4 tracking-wide">Informações Pessoais</h3>
+        <ul class="space-y-3 text-gray-800 text-[15px]">
+          <li><span class="font-medium text-gray-600">Data de Nascimento:</span> {{ cliente.data_nascimento|date:"d/m/Y" }}</li>
+          <li><span class="font-medium text-gray-600">Telefone:</span> {{ cliente.telefone|default:"-" }}</li>
+          <li><span class="font-medium text-gray-600">Email:</span> {{ cliente.email|default:"-" }}</li>
+          <li><span class="font-medium text-gray-600">Endereço:</span> {{ cliente.endereco|default:"-" }}</li>
+        </ul>
+      </section>
+
+      <!-- Documentos -->
+      <section>
+        <h3 class="text-sm font-semibold text-gray-500 uppercase mb-4 tracking-wide">Documentos</h3>
+        <ul class="space-y-3 text-gray-800 text-[15px]">
+          <li><span class="font-medium text-gray-600">Número CNH:</span> {{ cliente.cnh_numero|default:"-" }}</li>
+          <li><span class="font-medium text-gray-600">Validade CNH:</span> {% if cliente.cnh_validade %}{{ cliente.cnh_validade|date:"d/m/Y" }}{% else %}-{% endif %}</li>
+
+          <!-- Documento com foto -->
+          <li>
+            <span class="font-medium text-gray-600">Documento com Foto:</span>
+
+            {% if cliente.documento_com_foto %}
+              <a href="{{ cliente.documento_com_foto.url }}" 
+                target="_blank"
+                class="ml-2 text-blue-600 hover:text-blue-800 underline text-sm">
+                Abrir documento anexado
+              </a>
+            {% else %}
+              <span class="text-gray-500 ml-2">Nenhum documento anexado.</span>
+            {% endif %}
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Observações -->
+    <section class="mt-10">
+      <h3 class="text-sm font-semibold text-gray-500 uppercase mb-4 tracking-wide">Observações</h3>
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+        <p class="text-gray-800 text-[15px] leading-relaxed">
+          {{ cliente.observacao|default:"Nenhuma observação registrada." }}
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

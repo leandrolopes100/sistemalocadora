@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Detalhes do Veículo{% endblock %}
+{% block page_title %}Detalhes do Veículo{% endblock %}
+{% block page_subtitle %}Visualize informações completas do veículo selecionado.{% endblock %}
+
+{% block content %}
+<div class="p-6 space-y-6 max-w-6xl mx-auto">
+
+  <!-- 🔹 Card Principal -->
+  <div class="bg-white rounded-3xl shadow transition hover:shadow-lg p-8 flex flex-col md:flex-row gap-8">
+
+    <!-- 📸 Foto do Veículo -->
+    <div class="w-full md:w-72 h-auto bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden flex flex-col items-center justify-start p-3">
+      {% if veiculo.foto_veiculo %}
+        <img src="{{ veiculo.foto_veiculo.url }}" alt="{{ veiculo.modelo }}" 
+             class="w-full h-52 object-cover rounded-lg hover:scale-105 transition-transform duration-300 mb-3">
+      {% else %}
+        <div class="h-52 flex items-center justify-center text-gray-400 text-sm">Sem foto disponível</div>
+      {% endif %}
+    </div>
+
+    <!-- 🧾 Informações -->
+    <div class="flex-1">
+      <h2 class="text-xl font-semibold text-gray-900 mb-5 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 13l1.5-4.5A1 1 0 015.5 7h13a1 1 0 01.95.684L21 13v5a1 1 0 01-1 1h-1a2 2 0 11-4 0H9a2 2 0 11-4 0H4a1 1 0 01-1-1v-5z" />
+        </svg>
+        Informações do Veículo
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700 text-sm">
+        <p><strong>Modelo:</strong> {{ veiculo.modelo }}</p>
+        <p><strong>Marca:</strong> {{ veiculo.marca }}</p>
+         <p><strong>KM Atual:</strong> {{ veiculo.km_atual|intcomma }}</p>
+        <p><strong>Ano:</strong> {{ veiculo.ano }}</p>
+        <p><strong>Placa:</strong> {{ veiculo.placa }}</p>
+        <p><strong>Chassi:</strong> {{ veiculo.chassi|default:"-" }}</p>
+        <p><strong>RENAVAM:</strong> {{ veiculo.renavam|default:"-" }}</p>
+        <p><strong>Valor FIPE:</strong> R$ {{ veiculo.fipe|floatformat:2|intcomma }}</p>
+        <p><strong>Despesas Totais:</strong> R$ {{ total_despesas|floatformat:2|intcomma }}</p>
+      </div>
+
+      <!-- Documento do Veículo-->
+      <div class="mt-6">
+        <h3 class="text-sm font-semibold text-gray-800 mb-2">Documento do Veículo</h3>
+
+        {% if veiculo.documento_veiculo %}
+          {% with veiculo.documento_veiculo.url|lower as doc_url %}
+            {% if ".pdf" in doc_url %}
+              <a href="{{ veiculo.documento_veiculo.url }}" target="_blank"
+                 class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition">
+                📄 Visualizar Documento (PDF)
+              </a>
+            {% else %}
+              <a href="{{ veiculo.documento_veiculo.url }}" target="_blank">
+                <img src="{{ veiculo.documento_veiculo.url }}" 
+                     alt="Documento do veículo" 
+                     class="w-44 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition">
+              </a>
+            {% endif %}
+          {% endwith %}
+        {% else %}
+          <p class="text-sm text-gray-500">Nenhum documento anexado.</p>
+        {% endif %}
+      </div>
+
+      <!-- Status -->
+      <div class="mt-5">
+        <p>
+          <strong>Status:</strong>
+          {% if veiculo.status == "disponível" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-green-600"></span> Disponível
+            </span>
+          {% elif veiculo.status == "alugado" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-yellow-600"></span> Alugado
+            </span>
+          {% elif veiculo.status == "manutencao" %}
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-orange-600"></span> Manutenção
+            </span>
+          {% else %}
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-gray-500"></span> Inativo
+            </span>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📝 Observações -->
+  <div class="bg-white rounded-3xl shadow transition hover:shadow-lg p-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Observações
+    </h2>
+    <p class="text-gray-700 text-sm leading-relaxed">
+      {{ veiculo.observacao|default:"Nenhuma observação cadastrada." }}
+    </p>
+  </div>
+
+  <!-- 🔙 Botão Voltar -->
+  <div class="flex justify-end">
+    <a href="{% url 'veiculo_list' %}" 
+       class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 transition shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 19l-7-7 7-7" />
+      </svg>
+      Voltar
+    </a>
+  </div>
+
+</div>
+{% endblock %}

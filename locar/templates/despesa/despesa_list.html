@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Despesas — Locadora{% endblock %}
+{% block page_title %}Despesas de Veículos{% endblock %}
+{% block page_subtitle %}Gerencie e visualize as despesas relacionadas a cada veículo.{% endblock %}
+
+{% block content %}
+<div class="p-6 space-y-6">
+
+  <!-- 🔹 Cabeçalho -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m4-4H8m13 4a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Controle de Despesas
+    </h2>
+    <a href="{% url 'despesa_adicionar' %}"
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-700 hover:bg-green-800 text-white text-sm shadow-md transition">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+        <path d="M12 4.5a1 1 0 011 1v5.5h5.5a1 1 0 110 2H13v5.5a1 1 0 11-2 0V13H5.5a1 1 0 110-2H11V5.5a1 1 0 011-1z"/>
+      </svg>
+      Cadastrar Despesa
+    </a>
+  </div>
+
+  <!-- 🔹 Filtros -->
+  <form method="get" class="flex flex-wrap gap-3 items-end mb-6">
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">Veículo</label>
+      <select name="veiculo" class="border border-gray-300 rounded-lg text-sm p-2 focus:ring-amber-500 focus:border-amber-500">
+        <option value="">Todos</option>
+        {% for v in veiculos %}
+          <option value="{{ v.id }}" {% if request.GET.veiculo == v.id|stringformat:"s" %}selected{% endif %}>
+            {{ v.modelo }} ({{ v.placa }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">Categoria</label>
+      <select name="categoria" class="border border-gray-300 rounded-lg text-sm p-2 focus:ring-amber-500 focus:border-amber-500">
+        <option value="">Todas</option>
+        <option value="manutencao" {% if request.GET.categoria == "manutencao" %}selected{% endif %}>Manutenção</option>
+        <option value="multa" {% if request.GET.categoria == "multa" %}selected{% endif %}>Multa</option>
+        <option value="seguro" {% if request.GET.categoria == "seguro" %}selected{% endif %}>Seguro</option>
+        <option value="ipva" {% if request.GET.categoria == "ipva" %}selected{% endif %}>IPVA</option>
+        <option value="outros" {% if request.GET.categoria == "outros" %}selected{% endif %}>Outros</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">Mês</label>
+      <select name="mes" class="border border-gray-300 rounded-lg text-sm p-2 focus:ring-amber-500 focus:border-amber-500">
+        <option value="">Todos</option>
+        {% for m in meses %}
+          <option value="{{ forloop.counter }}" {% if request.GET.mes == forloop.counter|stringformat:"s" %}selected{% endif %}>
+            {{ m }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm text-gray-500 mb-1">Ano</label>
+      <select name="ano" class="border border-gray-300 rounded-lg text-sm p-2 focus:ring-amber-500 focus:border-amber-500">
+        <option value="">Todos</option>
+        {% for a in anos %}
+          <option value="{{ a }}" {% if request.GET.ano == a|stringformat:"s" %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-leaf-50" type="submit">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z" />
+        </svg>
+        Buscar
+      </button>
+  </form>
+
+  <!-- 🔹 Tabela -->
+  <div class="overflow-x-auto bg-white border border-gray-200 rounded-2xl shadow-sm">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold border-b">
+        <tr>
+          <th class="px-4 py-3 text-left">Veículo</th>
+          <th class="px-4 py-3 text-left">Categoria</th>
+          <th class="px-4 py-3 text-left">Descrição</th>
+          <th class="px-4 py-3 text-center">Data</th>
+          <th class="px-4 py-3 text-right">Valor</th>
+          <th class="px-4 py-3 text-center">Comprovante</th>
+          <th class="px-4 py-3 text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for despesa in despesas %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3">{{ despesa.veiculo }}</td>
+            <td class="px-4 py-3 capitalize">{{ despesa.categoria }}</td>
+            <td class="px-4 py-3">{{ despesa.descricao }}</td>
+            <td class="px-4 py-3 text-center">{{ despesa.data|date:"d/m/Y" }}</td>
+            <td class="px-4 py-3 text-right font-medium text-gray-800">R$ {{ despesa.valor|floatformat:2 }}</td>
+            <td class="px-4 py-3 text-center">
+              {% if despesa.comprovante %}
+                <a href="{{ despesa.comprovante.url }}" target="_blank" class="text-blue-600 hover:underline">Ver</a>
+              {% else %}
+                <span class="text-gray-400 text-xs">—</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-center space-x-2">
+              <a href="{% url 'despesa_editar' despesa.id %}"
+                 class="inline-flex items-center justify-center w-8 h-8 text-yellow-600 hover:bg-yellow-50 rounded-lg transition"
+                 title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 3.487l3.651 3.65M4.5 20.25h15m-6.75-6.75l6.75-6.75-3.651-3.65-6.75 6.75v3.65h3.651z"/>
+                </svg>
+              </a>
+              <a href="{% url 'despesa_excluir' despesa.id %}"
+                 class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-lg transition"
+                 title="Excluir">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-gray-500 py-6">Nenhuma despesa cadastrada.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔹 Total -->
+  <div class="text-right mt-4 text-gray-700 font-medium">
+    Total de Despesas:
+    <span class="text-amber-700 font-semibold">R$ {{ total_despesas|floatformat:2 }}</span>
+  </div>
+</div>
+{% endblock %}

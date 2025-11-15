@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Encerrar Locação — Locadora{% endblock %}
+{% block page_title %}Encerrar Locação{% endblock %}
+{% block page_subtitle %}Finalize a locação informando a quilometragem final, o status do caução e observações relevantes.{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 bg-white border border-gray-100 rounded-2xl shadow-lg p-8">
+
+  <!-- Cabeçalho da Locação -->
+  <div class="mb-8 border-b border-gray-100 pb-5">
+    <h2 class="text-2xl font-semibold text-gray-800">Encerramento da Locação</h2>
+    <div class="mt-3 space-y-1 text-sm text-gray-600">
+      <p><span class="font-medium text-gray-700">Veículo:</span> {{ locacao.veiculo }}</p>
+      <p><span class="font-medium text-gray-700">Cliente:</span> {{ locacao.cliente }}</p>
+      <p><span class="font-medium text-gray-700">Início:</span> {{ locacao.inicio|date:"d/m/Y H:i" }}</p>
+      <p><span class="font-medium text-gray-700">KM Inicial:</span> {{ locacao.km_inicio|intcomma }}</p>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Campo KM Final -->
+    <div>
+      <label for="id_km_fim" class="block text-sm font-medium text-gray-700">
+        Quilometragem Final
+      </label>
+      {{ form.km_fim }}
+      {% if form.km_fim.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.km_fim.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Campo Status do Caução -->
+    <div>
+      <label for="id_caucao_status" class="block text-sm font-medium text-gray-700">
+        Situação do Caução
+      </label>
+      {{ form.caucao_status }}
+      {% if form.caucao_status.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.caucao_status.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Campo Observações -->
+    <div>
+      <label for="id_observacoes" class="block text-sm font-medium text-gray-700">
+        Observações
+      </label>
+      {{ form.observacoes }}
+      {% if form.observacoes.errors %}
+        <p class="text-sm text-red-600 mt-1">{{ form.observacoes.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Ações -->
+    <div class="flex justify-end items-center gap-3 pt-6 border-t border-gray-100">
+      <a href="{% url 'locacao_detalhe' locacao.id %}"
+         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition shadow-sm">
+        Cancelar
+      </a>
+
+      <button type="submit"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-yellow-600 hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 shadow-md transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Confirmar Encerramento
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
