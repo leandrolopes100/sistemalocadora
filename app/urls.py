@@ -11,6 +11,7 @@ from locar.views import ( ClienteList, ClienteCreate, ClienteDelete, ClienteDeta
                          )
 
 urlpatterns = [
+    path("", lambda request: redirect("dashboard/")),
     path('admin/', admin.site.urls),
     path('clientes/', ClienteList.as_view(), name='cliente_list'),
     path('clientes/adicionar/', ClienteCreate.as_view(), name='cliente_adicionar'),
