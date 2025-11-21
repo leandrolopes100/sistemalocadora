@@ -4,7 +4,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(t)ex@#1ga4e%p)_ejtw96y^$2395qvb&bhb2yf!b_=x@i#(j6'
 DEBUG = True
-ALLOWED_HOSTS = ["sistemalocadora.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = []
 MEDIA_ROOT = os.path.join(BASE_DIR, "media") 
 MEDIA_URL = "/media/"
 
